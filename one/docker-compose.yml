@@ -1,0 +1,35 @@
+version: '2'
+services:
+  one:
+    image: quay.io/gravitational/teleport:3.1.1
+    container_name: one
+    mem_limit: 300m
+    memswap_limit: 0
+    ports:
+      - "3080:3080"
+      - "3023:3023"
+      - "3025:3025"
+      - "3024:3024"
+    volumes:
+      - ./one.yaml:/etc/teleport/teleport.yaml
+      - ./data/one:/var/lib/teleport
+      - certs:/mnt/shared/certs
+    networks:
+      teleport:
+        ipv4_address: 172.10.1.1
+        aliases:
+          - one-lb
+
+networks:
+  teleport:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.10.1.0/16
+        ip_range: 172.10.1.0/24
+        gateway: 172.10.1.254
+
+
+volumes:
+  certs:
