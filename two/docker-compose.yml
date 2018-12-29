@@ -1,0 +1,46 @@
+version: '2'
+services:
+  two-auth:
+    mem_limit: 300m
+    image: quay.io/gravitational/teleport:3.1.1
+    container_name: two-auth
+    volumes:
+      - ./data/two/auth:/var/lib/teleport
+      - ./two-auth.yaml:/etc/teleport/teleport.yaml
+    networks:
+      teleport:
+        ipv4_address: 172.10.1.2
+  two-proxy:
+    mem_limit: 300m
+    image: quay.io/gravitational/teleport:3.1.1
+    container_name: two-proxy
+    ports:
+      - "5080:5080"
+      - "5023:5023"
+    volumes:
+      - ./data/two/proxy:/var/lib/teleport
+      - ./two-proxy.yaml:/etc/teleport/teleport.yaml
+    networks:
+      teleport:
+        ipv4_address: 172.10.1.3
+  two-node:
+    mem_limit: 300m
+    image: quay.io/gravitational/teleport:3.1.1
+    container_name: two-node
+    volumes:
+      - ./data/two/node:/var/lib/teleport
+      - ./two-node.yaml:/etc/teleport/teleport.yaml
+    networks:
+      teleport:
+        ipv4_address: 172.10.1.4
+
+networks:
+  teleport:
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.10.1.0/16
+        ip_range: 172.10.1.0/24
+        gateway: 172.10.1.254
+volumes:
+  certs:
